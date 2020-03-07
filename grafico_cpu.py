@@ -2,7 +2,7 @@ import psutil
 import time
 from matplotlib import pyplot as plt
 
-
+# fiz um switch para gerenciar melhor os pedidos
 def meu_switch():
     validacao = True
     x = 1
@@ -27,7 +27,7 @@ def meu_switch():
         else:
             print("opcao inválida")
 
-
+#total: total de memória principal em bytes. Caso queira converter para GB, divida o valor por 1024x1024x1024.
 def uso_memoria():
     mem = psutil.virtual_memory()
     total = round(mem.total / 1024 ** 3, 2)
@@ -36,17 +36,19 @@ def uso_memoria():
     plt.show()
 
 
-def uso_cpu():
+#O programa acima irá produzir informação de uso de processamento a
+    # cada segundo, 100 vezes. O comando time.sleep(1) serve para esperar 1 segundo até a próxima leitura.
+    # plot mostra essa sequencia no grafico
     lista_cpu_percent = []
 
-    for i in range(0, 1200):
+    for i in range(0, 100):
         lista_cpu_percent.append(psutil.cpu_percent())
-        time.sleep(0.1)
+        time.sleep(1)
 
     plt.plot(lista_cpu_percent)
     plt.show()
 
-
+#O comando de nome psutil.disk_usage indica o uso de um disco com o caminho de localização passado como parâmetro.
 def uso_disco():
     print(time.ctime())
     disco = psutil.disk_usage('/')
