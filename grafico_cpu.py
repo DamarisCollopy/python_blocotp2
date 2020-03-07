@@ -36,9 +36,10 @@ def uso_memoria():
     plt.show()
 
 
-#O programa acima irá produzir informação de uso de processamento a
+    #O programa acima irá produzir informação de uso de processamento a
     # cada segundo, 100 vezes. O comando time.sleep(1) serve para esperar 1 segundo até a próxima leitura.
     # plot mostra essa sequencia no grafico
+def uso_cpu():
     lista_cpu_percent = []
 
     for i in range(0, 100):
