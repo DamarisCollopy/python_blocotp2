@@ -68,7 +68,7 @@ def uso_disco():
 
 def ip_maquina():
     dic_interfaces = psutil.net_if_addrs()
-    print(dic_interfaces)
+    print(dic_interfaces['Ethernet'][1][1])
 
 
 if __name__ == "__main__":
