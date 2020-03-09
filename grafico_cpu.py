@@ -1,6 +1,8 @@
 import psutil
+import platform
 import time
 from matplotlib import pyplot as plt
+
 
 # fiz um switch para gerenciar melhor os pedidos
 def meu_switch():
