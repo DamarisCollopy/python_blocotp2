@@ -90,7 +90,7 @@ def processador() :
     print(platform.uname())
     p = psutil.Process()
     print("Numero de Threads" + "" + str(p.num_threads()))
-    
+
 
 def detalhes_rede() :
     detalhes_rede = psutil.net_if_addrs()
@@ -117,7 +117,7 @@ def quantas_cpus() :
     for t in range(10) :
         print(psutil.cpu_percent(interval=0.1 , percpu = True))
 
-#Exibe um grafico dos nucleos e threads
+#Exibe um grafico dos nucleos
 def exibir_percent_cpu_grafico(segundos) :
     num_cores = psutil.cpu_count()
     lista_uso_cores = []
