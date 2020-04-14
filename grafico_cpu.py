@@ -3,8 +3,10 @@ import platform
 import time
 from matplotlib import pyplot as plt
 import cpuinfo
-from cpuinfo import get_cpu_info
+import os
+import stat
 
+#Inclui os TPs 2 e 3
 # fiz um switch para gerenciar melhor os pedidos
 def meu_switch():
     validacao = True
@@ -18,7 +20,9 @@ def meu_switch():
                       "\n 4 : Processador"
                       "\n 5 : Arquitetura de Rede"
                       "\n 6 : Informacao CPUs"
-                      "\n 7 : Sair \n"))
+                      "\n 7 : Sistema Operacional e Processos"
+                      "\n 8 : Diretorios"
+                      "\n 9 : Sair \n"))
         if z < x:
             uso_memoria()
         elif z == x:
@@ -35,6 +39,10 @@ def meu_switch():
             quantas_cpus()
             exibir_percent_cpu_grafico(10)
         elif z == 7:
+            exibir_processamento()
+        elif z == 8:
+            exibir_diretorio()
+        elif z == 9:
             print("Programa encerrado")
             break
         else:
@@ -131,6 +139,55 @@ def exibir_percent_cpu_grafico(segundos) :
             lista_uso_cores[i].append(percent[i])
     exibir_grafico(lista_uso_cores)
 
+def exibir_processamento() :
+    # devolve o sistema operacional
+    plataforma = platform.system()
+    print("Sistema Operacional: ", plataforma)
+    # Achar PID
+    pid = os.getpid()
+    print("Nome do processo ", psutil.Process(pid).name(), "PID", pid)
+
+    # Memoria
+    # rss ou [0] usado para encontrar a memoria dentro da lista Sistema Operacional Windows
+    processo = psutil.Process(os.getpid())
+    # processo que esta acontecendo no momento
+    # for proc in psutil.process_iter():
+    # print(proc.name)
+
+    # conversao em MB
+    memoria = processo.memory_info()[0] >> 20
+    print("Memoria usada processamento: ", memoria, "MB")
+
+    memoria_porcentagem = processo.memory_percent("rss")
+    print("Memoria em porcentagem processo: ", memoria_porcentagem * 100, "%")
+    # conversao bytes para MB
+    memoria_virtual = psutil.virtual_memory()
+    print("Memoria Usada Windows :", memoria_virtual[3] >> 20, "MB")
+
+def exibir_diretorio():
+    caminho_path = r"C:\Users\Damaris-PC"
+    # esse r junto do caminho é uma formatacao para tornar visivel indeferente como o caminho esta inscrito para a bibloteca, pq na hora da leitura a biblioteca pode nao conseguir visualizar o nome
+
+    print("Nome : %s" % caminho_path)
+
+    # print o diretorio que estou usando no momento, no caso o do programa
+    # print(os.getcwd())
+
+    # Mostra o conteudo dentro daquele diretorio
+    conteudo = os.listdir(caminho_path)
+    print(conteudo)
+
+    nome = os.stat(caminho_path)
+    formatar_hora = time.ctime(nome[stat.ST_MTIME])
+    formatar_criacao = time.ctime(nome[stat.ST_CTIME])
+    # O "ctime", conforme relatado pelo sistema operacional. Em alguns sistemas (como Unix), é a hora da última alteração de metadados e,
+    # em outros (como Windows), é a hora de criação (consulte a documentação da plataforma para obter detalhes).
+    print("Data da Criação:", formatar_criacao)
+    # biblioteca os stat.St_MTIME funcao que mostra a ultima modificacao, usando a biblioteca time eu consigo formatar o numero apresentado em hora,dia,ano,dia da semana e mes por isso chamei de formatar a hora
+    print("Data da modificação :", (formatar_hora))
+    # ST_SIZE Tamanho em bytes de um arquivo simples
+    tamanho = nome[stat.ST_SIZE]
+    print("Tamanho da pasta em bytes :", tamanho)
 
 if __name__ == "__main__":
     print(meu_switch())
