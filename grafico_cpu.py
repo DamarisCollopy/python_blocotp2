@@ -107,7 +107,7 @@ def uso_memoria():
         mem_livre.append(livre)
         min.append(current_time)
         # Uso no TP5 para caputurar os dados dos clocks na hora da execucao desse metodo
-        clock = time.perf_counter()
+        clock = time.process_time()
         numero_clock.append(clock)
         #Tempo de espera
         time.sleep(10)
@@ -300,7 +300,7 @@ def numero_clocks():
     for n, a in zip(min, numero_clock):
         text += '\nO Inicio do Evento {} Numero de Clocks {}'.format(n, a)
     print(text)
-    print("Inicio do Evento:",time.ctime(), "Clocks em funcionamento no momento:",time.perf_counter() )
+    print("Inicio do Evento:",time.ctime(), "Clocks em funcionamento no momento:",time.process_time())
     rtc_time = time.ctime()
     print(rtc_time)
 
