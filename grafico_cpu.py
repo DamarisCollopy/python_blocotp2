@@ -7,7 +7,8 @@ import os
 import stat
 import sched
 from pprint import pprint as pp
-import datetime
+import subprocess
+
 
 scheduler = sched.scheduler(time.time,time.sleep)
 memoria_lista = []
@@ -31,8 +32,9 @@ def meu_switch():
                       "\n 6 : Informacao CPUs"
                       "\n 7 : Sistema Operacional e Processos"
                       "\n 8 : Diretorios" #questao TP4 e TP5
-                      "\n 9 : Numero de Clocks" #questao TP5
-                      "\n 10 : Sair \n"))
+                      "\n 9 : Numero de Clocks" # questao TP5
+                      "\n 10 :Informação sobre sub rede de IP especifico " # questao TP6
+                      "\n 11 : Sair \n"))
         if z < x:
             uso_memoria()
             imprimindo_algumas_vezes(uso_memoria)
@@ -57,6 +59,8 @@ def meu_switch():
         elif z == 9:
             numero_clocks()
         elif z == 10:
+            chamadas_para_ip()
+        elif z == 11:
             print("Programa encerrado")
             break
         else:
@@ -162,6 +166,8 @@ def processador() :
     pid = os.getpid()
     print("Nome do processo ", psutil.Process(pid).name(), "Numero de Threads:", str(p.num_threads()))
     # processo que esta acontecendo no momento, apresentado PID,nome e status
+
+    # from pprint import pprint as pp
     pp([(procurar.pid, procurar.info) for procurar in psutil.process_iter(['name', 'status']) if
         procurar.info['status'] == psutil.STATUS_RUNNING])
 
@@ -303,6 +309,52 @@ def numero_clocks():
     print("Inicio do Evento:",time.ctime(), "Clocks em funcionamento no momento:",time.process_time())
     rtc_time = time.ctime()
     print(rtc_time)
+
+# TP6 projeto de bloco
+# Ping IP
+def ping(hostname):
+    # Criar uma ou mais funções que retornem ou apresentem informações sobre as máquinas pertencentes à sub-rede do IP específico
+    plataforma = platform.system()
+    args = []
+    if plataforma == "Windows":
+        args = ["ping", "-n", "1", "-l", "1", "-w", "100", hostname]
+
+    else:
+        args = ['ping', '-c', '1', '-W', '1', hostname]
+
+    ret_cod = subprocess.call(args,
+                              stdout=open(os.devnull, 'w'),
+                              stderr=open(os.devnull, 'w'))
+    return ret_cod
+
+def verifica_hosts(base_ip):
+    """Verifica todos os host com a base_ip entre 1 e 255 retorna uma lista com todos os host que tiveram resposta 0 (ativo)"""
+    print("Mapeando\r")
+    host_validos = []
+    return_codes = dict()
+    for i in range(1, 255):
+
+        return_codes[base_ip + '{0}'.format(i)] = ping(base_ip + '{0}'.format(i))
+        if i % 20 == 0:
+            print(".", end="")
+        if return_codes[base_ip + '{0}'.format(i)] == 0:
+            host_validos.append(base_ip + '{0}'.format(i))
+    print("\nMapping ready...")
+
+    return host_validos
+
+# TP 6
+#11 Questao Criar uma ou mais funções que retornem ou apresentem informações sobre as máquinas pertencentes à sub-rede do IP específico
+def chamadas_para_ip():
+    # Chamadas
+    ip_string = input("Entre com o ip alvo: ")
+    ip_lista = ip_string.split('.')
+    base_ip = ".".join(ip_lista[0:3]) + '.'
+    # 2 Questao Usar a função em seu programa para mostrar o resultado. O resultado pode ser em texto formatado impresso na tela ou gráfico, usando o módulo ‘pygame’.
+    print("O teste será feito na sub rede: ", base_ip)
+    # 3 Questao Criar uma ou mais funções que retornem ou apresentem informações sobre as portas dos diferentes IPs obtidos nessa sub rede
+    # 4 Questao Usar a função em seu programa para mostrar o resultado. O resultado pode ser em texto formatado impresso na tela ou gráfico, usando o ‘pygame’.
+    print("Os host válidos são: ", verifica_hosts(base_ip))
 
 def conversao_bytes(n):
 
