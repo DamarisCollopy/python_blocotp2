@@ -8,13 +8,15 @@ import stat
 import sched
 from pprint import pprint as pp
 import subprocess
-
+import socket
+import nmap
 
 scheduler = sched.scheduler(time.time,time.sleep)
 memoria_lista = []
 min = []
 mem_livre = []
 numero_clock = []
+
 
 #Inclui os TPs 2 e 3
 # fiz um switch para gerenciar melhor os pedidos
@@ -114,7 +116,7 @@ def uso_memoria():
         clock = time.process_time()
         numero_clock.append(clock)
         #Tempo de espera
-        time.sleep(10)
+        time.sleep(1)
     imprime_evento()
 
     # O programa acima irá produzir informação de uso da memoria virtual, mostra o uso e a memoria livre alem do total
@@ -171,14 +173,42 @@ def processador() :
     pp([(procurar.pid, procurar.info) for procurar in psutil.process_iter(['name', 'status']) if
         procurar.info['status'] == psutil.STATUS_RUNNING])
 
-
+# TP 7
+# 1 Questao Crie uma ou mais funções que retornem ou apresentem as seguintes informações de redes: IP, gateway, máscara de subrede.
 def detalhes_rede() :
-    detalhes_rede = psutil.net_if_addrs()
-    num_interfaces = len(detalhes_rede)
-    for i in range(num_interfaces):
-        print(detalhes_rede['Ethernet'][i][1])
 
-#Informação de arquitetura
+    ip = socket.gethostbyname(socket.gethostname())
+    print(os.system('ipconfig'))
+    print(f" IPv4 : {ip} ")
+    # 2 Questao  crie uma ou mais funções que retornem ou apresentem as seguintes informações de redes: Uso de dados de rede por interface.
+    informacao_envio = psutil.net_io_counters(pernic=True)
+    transito = []
+
+    for i in informacao_envio:
+        # Total em 5 segundos
+        transito.append(str(i))
+    for j in transito :
+        print(j)
+        print("\t" + str(informacao_envio[j]))
+
+    for i in range(4):
+        time.sleep(1)
+        informacao_envio = psutil.net_io_counters(pernic=True)
+        for j in transito:
+            print(j)
+            print("\t" + str(informacao_envio[j]))
+            
+    # 3 Questao Crie uma ou mais funções que retornem ou apresentem as seguintes informações de redes: Uso de dados de rede por processos.
+    # processos -  obter todos os PIDs dos processos executando no sistema.
+    processos = psutil.pids()
+    for i in processos:
+        # Adiciona os processos(pid) um por um dentro dessa funcao
+        p = psutil.Process(i)
+        # lista de conexões associadas ao processo
+        for x in p.connections() :
+           print("IP:", x[3][0] , "Porta :", x[3][1], "Status :", x[5])
+
+# Informação de arquitetura
 def arquitetura_info() :
 
     cpu = cpuinfo.get_cpu_info()
@@ -211,7 +241,7 @@ def quantas_cpus() :
         threads.append(threads_analise)
         current_time = time.strftime("%H:%M:%S", time.localtime(time.time()))
         segundos.append(current_time)
-        time.sleep(10)
+        time.sleep(1)
 
     text = ''
     for n, a in zip(lista_perc, nucleos):
@@ -344,17 +374,22 @@ def verifica_hosts(base_ip):
     return host_validos
 
 # TP 6
-#11 Questao Criar uma ou mais funções que retornem ou apresentem informações sobre as máquinas pertencentes à sub-rede do IP específico
+# 11 Questao Criar uma ou mais funções que retornem ou apresentem informações sobre as máquinas pertencentes à sub-rede do IP específico
 def chamadas_para_ip():
     # Chamadas
     ip_string = input("Entre com o ip alvo: ")
     ip_lista = ip_string.split('.')
     base_ip = ".".join(ip_lista[0:3]) + '.'
+
     # 2 Questao Usar a função em seu programa para mostrar o resultado. O resultado pode ser em texto formatado impresso na tela ou gráfico, usando o módulo ‘pygame’.
     print("O teste será feito na sub rede: ", base_ip)
     # 3 Questao Criar uma ou mais funções que retornem ou apresentem informações sobre as portas dos diferentes IPs obtidos nessa sub rede
     # 4 Questao Usar a função em seu programa para mostrar o resultado. O resultado pode ser em texto formatado impresso na tela ou gráfico, usando o ‘pygame’.
-    print("Os host válidos são: ", verifica_hosts(base_ip))
+
+    for i in verifica_hosts(base_ip):
+        portas = socket.getaddrinfo(i, 'http')
+        for x in portas :
+            print("Os host válidos são:" ,i, " ",  "Portas usando protocolo http : ",  x[4][1],)
 
 def conversao_bytes(n):
 
