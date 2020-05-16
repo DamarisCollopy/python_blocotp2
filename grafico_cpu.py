@@ -174,6 +174,18 @@ def processador() :
         procurar.info['status'] == psutil.STATUS_RUNNING])
 
 # TP 7
+# Uso essa funcao para filtrar o tipo de protocolo tcp ou udp
+def obtem_tipo_socket(tipo):
+  if tipo == socket.SOCK_STREAM:
+      return("TCP")
+  elif tipo == socket.SOCK_DGRAM:
+      return("UDP")
+  elif tipo == socket.SOCK_RAW:
+      return("IP")
+  else:
+      return("-")
+
+# TP 7
 # 1 Questao Crie uma ou mais funções que retornem ou apresentem as seguintes informações de redes: IP, gateway, máscara de subrede.
 def detalhes_rede() :
 
@@ -206,7 +218,11 @@ def detalhes_rede() :
         p = psutil.Process(i)
         # lista de conexões associadas ao processo
         for x in p.connections() :
-           print("IP:", x[3][0] , "Porta :", x[3][1], "Status :", x[5])
+            if x.raddr :
+                if x.family == socket.AF_INET :
+                    print("Tipo :", obtem_tipo_socket(x.type), "IPv4:", x[3][0] , "Porta :", x[3][1], "Status :", x[5])
+                if x.family == socket.AF_INET6 :
+                    print("Tipo :", obtem_tipo_socket(x.type), "IPv6:", x[3][0] , "Porta :", x[3][1], "Status :", x[5])
 
 # Informação de arquitetura
 def arquitetura_info() :
